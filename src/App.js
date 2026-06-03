@@ -31,7 +31,7 @@ function App() {
     } catch {
       showToast("Failed to load tasks", "err");
     }
-  }, [BASE_URL, showToast]);
+  }, [BASE_URL]);
 
   useEffect(() => {
     fetchTasks();
