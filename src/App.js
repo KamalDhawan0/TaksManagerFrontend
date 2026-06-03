@@ -12,7 +12,6 @@ function Toast({ msg, type }) {
 }
 
 function App() {
-  const [connStatus, setConnStatus] = useState("idle");
   const [tasks, setTasks] = useState([]);
   const [filter, setFilter] = useState("all");
   const [title, setTitle] = useState("");
@@ -25,19 +24,18 @@ function App() {
 
   const BASE_URL = process.env.REACT_APP_BASE_URL;
 
-  async function fetchTasks() {
+  const fetchTasks = useCallback(async () => {
     try {
       const { data } = await axios.get(`${BASE_URL}/tasks`);
       setTasks(data);
-      setConnStatus("ok");
     } catch {
-      setConnStatus("err");
+      showToast("Failed to load tasks", "err");
     }
-  }
+  }, [BASE_URL, showToast]);
 
   useEffect(() => {
     fetchTasks();
-  }, [BASE_URL]);
+  }, [fetchTasks]);
 
   const showToast = useCallback((msg, type = "ok") => {
     setToast({ msg, type });
@@ -141,7 +139,9 @@ function App() {
 
         <div className="task-list">
           {filtered.length === 0 ? (
-            <div className="empty">// no tasks here</div>
+            <div>
+              {/* no tasks here */}
+            </div>
           ) : (
             filtered.map((t) => {
               const isDone = t.completed === true;
