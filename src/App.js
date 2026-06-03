@@ -21,16 +21,21 @@ function App() {
   const [editTitle, setEditTitle] = useState("");
   const [editDesc, setEditDesc] = useState("");
   const [toast, setToast] = useState({ msg: "", type: "" });
+  const [loading, setLoading] = useState(true);
 
   const BASE_URL = process.env.REACT_APP_BASE_URL;
 
   const fetchTasks = useCallback(async () => {
+    setLoading(true);
     try {
       const { data } = await axios.get(`${BASE_URL}/tasks`);
       setTasks(data);
     } catch {
       showToast("Failed to load tasks", "err");
+    } finally {
+      setLoading(false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [BASE_URL]);
 
   useEffect(() => {
@@ -101,7 +106,6 @@ function App() {
           <h1>task<span>.</span>manager</h1>
         </div>
 
-
         <div className="stats">
           <div className="stat"><div className="stat-label">total</div><div className="stat-val purple">{total}</div></div>
           <div className="stat"><div className="stat-label">active</div><div className="stat-val blue">{activeCount}</div></div>
@@ -138,10 +142,12 @@ function App() {
         </div>
 
         <div className="task-list">
-          {filtered.length === 0 ? (
-            <div>
-              {/* no tasks here */}
+          {loading ? (
+            <div className="loader-wrap">
+              <div className="loader" />
             </div>
+          ) : filtered.length === 0 ? (
+            <div className="empty">{/* no tasks here */}</div>
           ) : (
             filtered.map((t) => {
               const isDone = t.completed === true;
